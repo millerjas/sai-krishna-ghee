@@ -13,19 +13,20 @@ export const metadata: Metadata = {
 export default async function PageLayout(props: { children: React.ReactNode }) {
   return (
     <>
-      <NavigationHeader />
-      <div className="flex items-center text-white justify-center py-2.5 px-4 text-center bg-[#1D2B9A] border-b border-[#FFE500]/30 text-xs font-semibold tracking-wide">
-        <div className="flex flex-col small:flex-row small:gap-3 gap-1 items-center">
-          <span className="flex items-center gap-1.5 text-[#FFE500]">
-            <span className="bg-[#FFE500] text-[#1D2B9A] text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded">PURE & NATURAL</span>
-            100% Pure Desi Cow Ghee • Made From Fresh Cow Milk
-          </span>
-          <span className="hidden small:inline text-white/50">|</span>
-          <span className="text-white/90 font-normal">
-            Free Shipping on Orders Above ₹499
-          </span>
+      {/* 1. Announcement Bar at the very top of the site */}
+      <div className="w-full bg-[#121B6B] text-white py-2 px-4 border-b border-[#FFE500]/30 text-xs tracking-wider uppercase font-medium text-center">
+        <div className="content-container flex items-center justify-center gap-2">
+          <span>PURE TRADITIONAL COW GHEE</span>
+          <span className="text-[#FFE500]">―</span>
+          <span className="text-[#FFE500] font-bold">CRAFTED WITH CARE</span>
+          <span className="mx-2 text-white/30">|</span>
+          <span>FREE DELIVERY ON ORDERS ABOVE ₹499</span>
         </div>
       </div>
+
+      {/* 2. Navbar follows next */}
+      <NavigationHeader />
+
       {props.children}
       <Footer />
     </>

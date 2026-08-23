@@ -4,84 +4,117 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 
 const Hero = () => {
   return (
-    <div className="relative min-h-[70vh] w-full bg-gradient-to-br from-[#121B6B] via-[#1D2B9A] to-[#0A1045] text-white overflow-hidden rounded-2xl shadow-xl my-3">
-      {/* Decorative background circles */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#FFE500]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#EAB308]/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative min-h-[80vh] w-full bg-[#0A1045] text-white overflow-hidden rounded-3xl shadow-2xl my-3 border border-[#FFE500]/20">
+      {/* Background Layer with Royal Blue Gradient Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35 scale-105 transition-transform duration-1000"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?q=80&w=2000&auto=format&fit=crop')`,
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#060B28]/98 via-[#1D2B9A]/90 to-[#121B6B]/85 backdrop-blur-[1px]" />
+      
+      {/* Brand Ambient Glow */}
+      <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-[#FFE500]/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="content-container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center py-16 px-6 lg:px-12">
-        {/* Left Column: Hero Copy & CTA */}
+      <div className="content-container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center py-12 px-6 lg:px-12 min-h-[80vh]">
+        {/* Left Column: Brand Statement & Stats */}
         <div className="lg:col-span-7 flex flex-col items-start gap-6 text-left">
-          <div className="inline-flex items-center gap-2 bg-[#FFE500] text-[#1D2B9A] text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
-            <span className="w-2 h-2 rounded-full bg-[#1D2B9A] animate-pulse"></span>
-            100% PURE COW MILK GHEE
+          {/* Pre-Heading Banner */}
+          <div className="flex items-center gap-2 text-[#FFE500] text-xs font-semibold tracking-[0.25em] uppercase">
+            <span className="w-8 h-px bg-[#FFE500]/60"></span>
+            <span>PURE FARM FRESH COW MILK GHEE</span>
+            <span className="w-8 h-px bg-[#FFE500]/60"></span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl xl:text-6xl font-black tracking-tight text-white leading-tight">
-            DIVINE GOODNESS <br />
-            <span className="text-[#FFE500] underline decoration-[#FFE500]/40">IN EVERY SPOON</span>
+          {/* Headline (Reference Image Typography Pattern in Brand Colors) */}
+          <h1 className="heading-h1 text-white leading-[1.05] tracking-tight">
+            Golden Purity. <br />
+            <span className="font-serif italic font-normal text-[#FFE500]">
+              Rooted in Tradition.
+            </span>
           </h1>
 
-          <p className="text-lg text-blue-100 max-w-xl font-normal leading-relaxed">
-            Made from pure cow milk with traditional care. Sai Krishna Ghee delivers a rich golden granular texture, divine natural aroma, and essential nutritional goodness for your family.
+          {/* Subtitle Paragraph */}
+          <p className="body-large text-blue-100/90 max-w-xl font-light leading-relaxed">
+            Authentic ghee, traditionally slow-cooked from fresh cow milk. Prepared in small batches for rich golden granular texture, divine natural aroma, and exceptional purity.
           </p>
 
-          <div className="flex flex-wrap gap-4 pt-2">
+          {/* Dual Action Buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-2">
             <LocalizedClientLink
               href="/store"
-              className="px-8 py-4 bg-[#FFE500] hover:bg-[#ebd300] text-[#1D2B9A] font-extrabold text-base rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5"
+              className="px-8 py-4 bg-[#FFE500] hover:bg-[#ebd300] text-[#1D2B9A] btn-text rounded-full shadow-lg shadow-[#FFE500]/20 hover:shadow-xl transition-all transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-2 font-bold"
             >
-              SHOP COW GHEE NOW
+              <span>SHOP OUR GHEE →</span>
             </LocalizedClientLink>
 
             <LocalizedClientLink
               href="/store"
-              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold text-base rounded-xl border border-white/30 backdrop-blur-sm transition-all"
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/30 hover:border-white/50 btn-text rounded-full backdrop-blur-md transition-all inline-flex items-center justify-center font-medium"
             >
-              EXPLORE PACK SIZES
+              OUR STORY
             </LocalizedClientLink>
           </div>
 
-          {/* Quick Purity Badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/15 w-full text-xs font-semibold text-blue-100">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#FFE500]">✓</span> Fresh Cow Milk
+          {/* Bottom Stats Pill Card */}
+          <div className="mt-4 bg-[#060B28]/80 border border-white/20 backdrop-blur-md rounded-2xl p-4 inline-flex items-center justify-between gap-8 shadow-xl">
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-white">100%</span>
+              <span className="text-[10px] text-[#FFE500] uppercase tracking-wider font-bold">PURE COW MILK</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#FFE500]">✓</span> Rich Granular Texture
+            <div className="w-px h-8 bg-white/20" />
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-white">4.9★</span>
+              <span className="text-[10px] text-[#FFE500] uppercase tracking-wider font-bold">RATING</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#FFE500]">✓</span> Zero Preservatives
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[#FFE500]">✓</span> FSSAI Certified
+            <div className="w-px h-8 bg-white/20" />
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-white">10K+</span>
+              <span className="text-[10px] text-[#FFE500] uppercase tracking-wider font-bold">FAMILIES</span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Visual Product Showcase Card */}
+        {/* Right Column: Arched Window Showcase Frame */}
         <div className="lg:col-span-5 flex justify-center">
-          <div className="relative w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 text-center shadow-2xl flex flex-col items-center gap-6">
-            <div className="w-24 h-24 rounded-full bg-[#FFE500] text-[#1D2B9A] flex items-center justify-center shadow-xl">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C7 2 5 6.5 5 11.5C5 16.5 8.1 20 12 20C15.9 20 19 16.5 19 11.5C19 9 18 6.5 16 4.5C16 7.5 14 9 12 9C10 9 9 7.5 9 6C9 4 10.5 2.5 12 2Z" />
-              </svg>
+          <div className="relative w-full max-w-md aspect-[4/5] rounded-t-[140px] rounded-b-3xl overflow-hidden border-2 border-[#FFE500]/40 shadow-2xl bg-[#121B6B] group">
+            {/* Arch Window Ghee Photo */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+              style={{
+                backgroundImage: `url('https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?q=80&w=1000&auto=format&fit=crop')`,
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#060B28] via-transparent to-black/30" />
+
+            {/* Top Left Floating Pill */}
+            <div className="absolute top-6 left-6 bg-[#060B28]/90 text-white border border-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
+              <span className="text-[#FFE500]">🛕</span>
+              <span>Traditional Bilona Churned</span>
             </div>
 
-            <div>
-              <span className="text-[#FFE500] font-black tracking-widest text-xs uppercase">SIGNATURE PACK</span>
-              <h3 className="text-2xl font-black text-white mt-1">SAI KRISHNA COW GHEE</h3>
-              <p className="text-xs text-blue-200 mt-1">Available in 100g Pouch, 250ml, 500ml, 1L & 5L Packs</p>
+            {/* Bottom Right Floating Pill */}
+            <div className="absolute bottom-28 right-6 bg-[#1D2B9A]/95 text-white border border-[#FFE500]/40 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-lg">
+              <span className="text-emerald-400">🌿</span>
+              <span>100% Pure Desi Cow Milk</span>
             </div>
 
-            <div className="w-full bg-[#121B6B]/80 rounded-2xl p-4 border border-[#FFE500]/40 flex items-center justify-between text-left">
+            {/* Bottom Product Overlay Card */}
+            <div className="absolute bottom-4 left-4 right-4 bg-[#060B28]/95 backdrop-blur-xl border border-white/20 rounded-2xl p-4 flex items-center justify-between shadow-2xl">
               <div>
-                <p className="text-[11px] text-blue-200 uppercase tracking-wider font-semibold">Special Offer</p>
-                <p className="text-sm font-bold text-white">100g Pouch Available</p>
+                <h4 className="font-serif font-bold text-lg text-white">Sai Krishna Cow Ghee</h4>
+                <p className="text-xs text-[#FFE500] font-bold mt-0.5">
+                  ₹350 / 500g • ★ 5.0 Rating
+                </p>
               </div>
-              <span className="bg-[#FFE500] text-[#1D2B9A] font-black text-xs px-3 py-1.5 rounded-lg">
-                TRY NOW
-              </span>
+              <LocalizedClientLink
+                href="/store"
+                className="bg-[#FFE500] hover:bg-[#ebd300] text-[#1D2B9A] font-extrabold px-4 py-2 rounded-xl text-xs transition-all shadow-md flex items-center gap-1"
+              >
+                <span>ADD</span>
+                <span>🛒</span>
+              </LocalizedClientLink>
             </div>
           </div>
         </div>

@@ -43,9 +43,9 @@ export default async function ProductPreview({
             isFeatured={isFeatured}
           />
         </div>
-        <div className="flex flex-col txt-compact-medium">
-          <Text className="text-neutral-600 text-xs">BRAND</Text>
-          <Text className="text-ui-fg-base" data-testid="product-title">
+        <div className="flex flex-col gap-1">
+          <Text className="text-neutral-500 label-badge uppercase">Sai Krishna Ghee</Text>
+          <Text className="text-neutral-900 product-title font-serif" data-testid="product-title">
             {product.title}
           </Text>
         </div>

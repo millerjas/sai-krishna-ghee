@@ -86,6 +86,59 @@
     @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
   }
 
+  /* Design System Typography Tokens */
+  .heading-h1, h1.hero-heading {
+    @apply font-serif text-[42px] small:text-[64px] font-semibold leading-[1.05];
+  }
+
+  .heading-h2, h2.section-heading {
+    @apply font-serif text-[34px] small:text-[48px] font-semibold leading-[1.1];
+  }
+
+  .heading-h3, h3.subsection-heading {
+    @apply font-serif text-[28px] small:text-[36px] font-medium small:font-semibold leading-[1.15];
+  }
+
+  .heading-h4, h4.block-heading {
+    @apply font-serif text-[24px] small:text-[28px] font-medium small:font-semibold leading-[1.2];
+  }
+
+  .product-name, .product-title {
+    @apply font-serif text-[21px] small:text-[24px] font-semibold leading-[1.2];
+  }
+
+  .body-large {
+    @apply font-sans text-[16px] small:text-[18px] font-normal leading-[1.6];
+  }
+
+  .body-base {
+    @apply font-sans text-[15px] small:text-[16px] font-normal leading-[1.6];
+  }
+
+  .body-small {
+    @apply font-sans text-[13px] small:text-[14px] font-normal leading-[1.5];
+  }
+
+  .nav-text {
+    @apply font-sans text-[14px] small:text-[15px] font-medium leading-[1.2];
+  }
+
+  .btn-text {
+    @apply font-sans text-[14px] small:text-[15px] font-semibold leading-none;
+  }
+
+  .price-text {
+    @apply font-sans text-[15px] small:text-[18px] font-semibold leading-[1.2];
+  }
+
+  .label-badge {
+    @apply font-sans text-[11px] small:text-[12px] font-semibold leading-[1.2];
+  }
+
+  .caption-text {
+    @apply font-sans text-[11px] small:text-[12px] font-normal leading-[1.4];
+  }
+
   .text-xsmall-regular {
     @apply text-[10px] leading-4 font-normal;
   }
@@ -102,39 +155,7 @@
     @apply text-sm leading-6 font-normal;
   }
 
-  .text-base-semi {
-    @apply text-sm leading-6 font-semibold;
-  }
-
-  .text-large-regular {
-    @apply text-base leading-6 font-normal;
-  }
-
-  .text-large-semi {
-    @apply text-base leading-6 font-semibold;
-  }
-
-  .text-xl-regular {
-    @apply text-2xl leading-[36px] font-normal;
-  }
-
-  .text-xl-semi {
-    @apply text-2xl leading-[36px] font-semibold;
-  }
-
-  .text-2xl-regular {
-    @apply text-[30px] leading-[48px] font-normal;
-  }
-
-  .text-2xl-semi {
-    @apply text-[30px] leading-[48px] font-semibold;
-  }
-
-  .text-3xl-regular {
-    @apply text-[32px] leading-[44px] font-normal;
-  }
-
-  .text-3xl-semi {
-    @apply text-[32px] leading-[44px] font-semibold;
+  .text-[#1D2B9A] {
+    color: #1D2B9A;
   }
 }
