@@ -1,0 +1,31 @@
+{
+  "name": "my-monorepo",
+  "private": true,
+  "scripts": {
+    "setup": "yarn build-packages && yarn generate-env && yarn setup-db && yarn seed && yarn setup-user",
+    "dev": "turbo run dev",
+    "build-packages": "turbo run build --filter ./packages/*",
+    "setup-db": "cd ./apps/backend && npx medusa db:migrate",
+    "seed": "turbo run seed --filter=medusa-starter-default",
+    "setup-user": "cd ./apps/backend && npx medusa user -e admin@test.com -p supersecret -i admin",
+    "generate-env": "node -e \"const fs=require('fs'); if (!fs.existsSync('./apps/backend/.env')) fs.copyFileSync('./apps/backend/.env.template', './apps/backend/.env'); if (!fs.existsSync('./apps/storefront/.env')) fs.copyFileSync('./apps/storefront/.env.template', './apps/storefront/.env');\"",
+    "start": "turbo run start",
+    "lint": "turbo run lint"
+  },
+  "packageManager": "yarn@4.5.0",
+  "devDependencies": {
+    "@types/multer": "^1.4.12",
+    "turbo": "latest",
+    "typescript": "latest"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "@medusajs/medusa": "^2.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1"
+  }
+}
