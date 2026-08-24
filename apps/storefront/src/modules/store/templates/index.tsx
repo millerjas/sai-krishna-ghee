@@ -23,13 +23,26 @@ const StoreTemplate = ({
   const sort = sortBy || "created_at"
 
   return (
-    <div className="bg-neutral-100">
+    <div className="bg-[#FAF7F0] min-h-screen">
+      {/* Shop Page Hero Banner matching ghee-site shop.html */}
+      <div className="bg-[#173B2F] text-[#FAF7F0] py-12 px-6 text-center border-b border-[#D69A24]/30 shadow-md">
+        <div className="content-container flex flex-col items-center">
+          <span className="badge-gold mb-3">Purity Guaranteed</span>
+          <h1 className="font-serif text-3xl small:text-5xl font-bold text-[#FAF7F0]">
+            Shop Ghee — All Products
+          </h1>
+          <p className="text-sm small:text-base text-[#FAF7F0]/75 max-w-2xl mt-3 leading-relaxed">
+            Browse our full range of premium Indian ghee — A2 Cow Ghee, Gir Cow Ghee, Bilona Ghee, Desi Cow Ghee, and Buffalo Ghee. Traditionally prepared, crafted with care.
+          </p>
+        </div>
+      </div>
+
       <div
-        className="flex flex-col py-6 content-container gap-4"
+        className="flex flex-col py-8 content-container gap-6"
         data-testid="category-container"
       >
         <StoreBreadcrumb />
-        <div className="flex flex-col small:flex-row small:items-start gap-3">
+        <div className="flex flex-col small:flex-row small:items-start gap-8">
           <RefinementList sortBy={sort} categories={categories} />
           <div className="w-full">
             <Suspense fallback={<SkeletonProductGrid />}>

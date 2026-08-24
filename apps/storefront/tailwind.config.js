@@ -23,11 +23,26 @@ module.exports = {
         xlarge: "1680px",
         "2xlarge": "1920px",
       },
+      colors: {
+        ghee: {
+          green: "#173B2F",
+          "green-dark": "#0E2920",
+          gold: "#D69A24",
+          "gold-dark": "#B87B10",
+          cream: "#F4EFE6",
+          ivory: "#FAF7F0",
+          charcoal: "#1C1917",
+          "text-secondary": "#52525B",
+          border: "#E5E0D8",
+        },
+      },
       fontFamily: {
-        sans: ["var(--font-quicksand)", "sans-serif"],
-        serif: ["var(--font-cormorant)", "serif"],
-        quicksand: ["var(--font-quicksand)", "sans-serif"],
-        cormorant: ["var(--font-cormorant)", "serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+        serif: ["var(--font-playfair)", "serif"],
+        playfair: ["var(--font-playfair)", "serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        quicksand: ["var(--font-inter)", "sans-serif"],
+        cormorant: ["var(--font-playfair)", "serif"],
       },
       keyframes: {
         "accordion-open": {

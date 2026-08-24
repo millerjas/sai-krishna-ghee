@@ -1,19 +1,19 @@
 import { getBaseURL } from "@lib/util/env"
-import { Cormorant_Garamond, Quicksand } from "next/font/google"
+import { Playfair_Display, Inter } from "next/font/google"
 import { Metadata } from "next"
 import "styles/globals.css"
 
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
   display: "swap",
 })
 
-const quicksand = Quicksand({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-quicksand",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 })
 
@@ -26,9 +26,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html
       lang="en"
       data-mode="light"
-      className={`${cormorant.variable} ${quicksand.variable}`}
+      className={`${playfair.variable} ${inter.variable}`}
     >
-      <body className="font-sans antialiased bg-[#FDFCFB] text-neutral-900">
+      <body className="font-sans antialiased bg-[#FAF7F0] text-[#1C1917]">
         <main className="relative">{props.children}</main>
       </body>
     </html>

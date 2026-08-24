@@ -1,7 +1,6 @@
 import { getProductsById } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
-import { Text, clx } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewAddToCart from "./preview-add-to-cart"
@@ -30,50 +29,41 @@ export default async function ProductPreview({
   }, 0)
 
   return (
-    <LocalizedClientLink href={`/products/${product.handle}`} className="group">
-      <div
-        data-testid="product-wrapper"
-        className="flex flex-col gap-4 relative w-full overflow-hidden p-4 bg-white shadow-borders-base rounded-lg group-hover:shadow-[0_0_0_4px_rgba(0,0,0,0.1)] transition-shadow ease-in-out duration-150"
-      >
-        <div className="w-full h-full p-10">
+    <div className="group bg-white rounded-2xl p-5 border border-[#E5E0D8] shadow-sm hover:shadow-xl hover:border-[#D69A24] transition-all duration-200 flex flex-col justify-between h-full">
+      <LocalizedClientLink href={`/products/${product.handle}`} className="block">
+        {/* Product Image Canvas */}
+        <div className="relative w-full aspect-square rounded-xl bg-[#F4EFE6] flex items-center justify-center p-4 overflow-hidden mb-4 group-hover:scale-105 transition-transform duration-200">
           <Thumbnail
             thumbnail={product.thumbnail}
             images={product.images}
             size="square"
             isFeatured={isFeatured}
           />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Text className="text-neutral-500 label-badge uppercase">Sai Krishna Ghee</Text>
-          <Text className="text-neutral-900 product-title font-serif" data-testid="product-title">
-            {product.title}
-          </Text>
-        </div>
-        <div className="flex flex-col gap-0">
-          {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-          <Text className="text-neutral-600 text-[0.6rem]">Excl. VAT</Text>
-        </div>
-        <div className="flex justify-between">
-          <div className="flex flex-row gap-1 items-center">
-            <span
-              className={clx({
-                "text-green-500": inventoryQuantity && inventoryQuantity > 50,
-                "text-orange-500":
-                  inventoryQuantity &&
-                  inventoryQuantity <= 50 &&
-                  inventoryQuantity > 0,
-                "text-red-500": inventoryQuantity === 0,
-              })}
-            >
-              •
-            </span>
-            <Text className="text-neutral-600 text-xs">
-              {inventoryQuantity} left
-            </Text>
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            <span className="badge-gold">Bestseller</span>
           </div>
-          <PreviewAddToCart product={product} region={region} />
         </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-bold tracking-widest text-[#D69A24] uppercase">
+            Suddha Ghee
+          </span>
+          <h3 className="font-serif font-bold text-base text-[#1C1917] group-hover:text-[#173B2F] transition-colors leading-snug line-clamp-2" data-testid="product-title">
+            {product.title}
+          </h3>
+          <p className="text-xs text-[#71717A] line-clamp-2 mt-1">
+            {product.description || "Authentic ghee, traditionally churned using ancient Bilona method."}
+          </p>
+        </div>
+      </LocalizedClientLink>
+
+      <div className="pt-3 mt-4 border-t border-[#E5E0D8] flex items-center justify-between">
+        <div>
+          <span className="text-[10px] text-[#71717A] font-semibold block uppercase">Price</span>
+          {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+        </div>
+        <PreviewAddToCart product={product} region={region} />
       </div>
-    </LocalizedClientLink>
+    </div>
   )
 }

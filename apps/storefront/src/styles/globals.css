@@ -2,33 +2,54 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+:root {
+  --color-green: #173B2F;
+  --color-green-dark: #0E2920;
+  --color-gold: #D69A24;
+  --color-gold-dark: #B87B10;
+  --color-cream: #F4EFE6;
+  --color-ivory: #FAF7F0;
+  --color-charcoal: #1C1917;
+  --color-text-secondary: #52525B;
+  --color-text-muted: #71717A;
+  --color-border-light: #E5E0D8;
+  --announcement-height: 36px;
+  --nav-height: 72px;
+}
+
 @layer utilities {
-  .bg-brand-blue {
-    background-color: #1D2B9A;
+  .bg-ghee-green {
+    background-color: #173B2F;
   }
-  .bg-brand-darkblue {
-    background-color: #121B6B;
+  .bg-ghee-green-dark {
+    background-color: #0E2920;
   }
-  .text-brand-blue {
-    color: #1D2B9A;
+  .text-ghee-green {
+    color: #173B2F;
   }
-  .bg-brand-yellow {
-    background-color: #FFE500;
+  .bg-ghee-gold {
+    background-color: #D69A24;
   }
-  .text-brand-yellow {
-    color: #FFE500;
+  .text-ghee-gold {
+    color: #D69A24;
   }
-  .bg-brand-gold {
-    background-color: #EAB308;
+  .bg-ghee-cream {
+    background-color: #F4EFE6;
   }
-  .text-brand-gold {
-    color: #EAB308;
+  .bg-ghee-ivory {
+    background-color: #FAF7F0;
   }
-  .border-brand-yellow {
-    border-color: #FFE500;
+  .text-ghee-charcoal {
+    color: #1C1917;
   }
-  .border-brand-blue {
-    border-color: #1D2B9A;
+  .border-ghee-gold {
+    border-color: #D69A24;
+  }
+  .border-ghee-green {
+    border-color: #173B2F;
+  }
+  .border-ghee-light {
+    border-color: #E5E0D8;
   }
 
   /* Chrome, Safari and Opera */
@@ -79,28 +100,65 @@
 
 @layer components {
   .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
+    @apply max-w-[1440px] w-full mx-auto px-4 small:px-6;
   }
 
-  .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-[#173B2F] hover:bg-[#0E2920] text-white font-sans font-semibold rounded-full shadow-md transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-[#FAF7F0] hover:bg-[#F4EFE6] text-[#173B2F] border border-[#D69A24] font-sans font-semibold rounded-full transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-[#D69A24] hover:bg-[#B87B10] text-[#173B2F] font-sans font-bold rounded-full shadow-sm transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-6 py-3 text-[#FAF7F0] hover:text-[#D69A24] border border-[#FAF7F0]/30 hover:border-[#D69A24] font-sans font-medium rounded-full transition-all duration-200 cursor-pointer;
+  }
+
+  /* Badges */
+  .badge-gold {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#D69A24]/15 text-[#B87B10] border border-[#D69A24]/30;
+  }
+
+  .badge-green {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#173B2F]/10 text-[#173B2F] border border-[#173B2F]/20;
+  }
+
+  /* Announcement Bar */
+  .announcement-bar {
+    @apply bg-[#0E2920] text-[#FAF7F0] text-xs font-sans tracking-wide py-2 text-center flex items-center justify-center gap-2 border-b border-[#D69A24]/30;
+  }
+
+  /* Glass Card */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-[#E5E0D8] rounded-2xl shadow-sm;
+  }
+
+  /* Paper catalog sheet background */
+  .paper-catalog-sheet {
+    @apply bg-[#FAF7F0] rounded-3xl p-6 small:p-10 border border-[#E5E0D8] shadow-sm;
   }
 
   /* Design System Typography Tokens */
   .heading-h1, h1.hero-heading {
-    @apply font-serif text-[42px] small:text-[64px] font-semibold leading-[1.05];
+    @apply font-serif text-[42px] small:text-[64px] font-semibold leading-[1.05] text-[#1C1917];
   }
 
   .heading-h2, h2.section-heading {
-    @apply font-serif text-[34px] small:text-[48px] font-semibold leading-[1.1];
+    @apply font-serif text-[34px] small:text-[48px] font-semibold leading-[1.1] text-[#1C1917];
   }
 
   .heading-h3, h3.subsection-heading {
-    @apply font-serif text-[28px] small:text-[36px] font-medium small:font-semibold leading-[1.15];
+    @apply font-serif text-[28px] small:text-[36px] font-medium small:font-semibold leading-[1.15] text-[#1C1917];
   }
 
   .heading-h4, h4.block-heading {
-    @apply font-serif text-[24px] small:text-[28px] font-medium small:font-semibold leading-[1.2];
+    @apply font-serif text-[24px] small:text-[28px] font-medium small:font-semibold leading-[1.2] text-[#1C1917];
   }
 
   .product-name, .product-title {
@@ -153,9 +211,5 @@
 
   .text-base-regular {
     @apply text-sm leading-6 font-normal;
-  }
-
-  .text-[#1D2B9A] {
-    color: #1D2B9A;
   }
 }

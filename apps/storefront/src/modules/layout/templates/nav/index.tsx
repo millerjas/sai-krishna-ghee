@@ -1,43 +1,42 @@
 import { getCustomer } from "@lib/data/customer"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import FilePlus from "@modules/common/icons/file-plus"
 import User from "@modules/common/icons/user"
 import CartButton from "@modules/layout/components/cart-button"
-import { RequestQuotePrompt } from "@modules/quotes/components/request-quote-prompt"
 import { Suspense } from "react"
-import NavSearch from "@modules/layout/components/nav-search"
 
 export async function NavigationHeader() {
   const customer = await getCustomer().catch(() => null)
 
   return (
-    <div className="sticky top-0 inset-x-0 group z-[20] bg-[#121B6B] text-white small:py-3.5 small:px-6 p-2.5 text-sm border-b border-white/10 shadow-md">
-      <header className="flex w-full content-container relative small:mx-auto justify-between">
-        <div className="small:mx-auto flex justify-between items-center min-w-full">
-          {/* Left Brand Logo & Center Navigation */}
-          <div className="flex items-center space-x-8">
+    <div className="sticky top-0 inset-x-0 z-[50] flex flex-col">
+      {/* Main Navbar matching Suddha Ghee screenshot */}
+      <div className="bg-[#FAF7F0] text-[#1C1917] py-3.5 px-4 small:px-8 border-b border-[#E5E0D8] shadow-sm">
+        <header className="flex w-full content-container relative mx-auto justify-between items-center">
+          {/* Brand Logo */}
+          <div className="flex items-center space-x-12">
             <LocalizedClientLink
-              className="hover:opacity-90 flex items-center gap-2.5 group"
+              className="hover:opacity-90 flex items-center gap-3 group"
               href="/"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#FFE500] text-[#1D2B9A] flex items-center justify-center font-bold text-lg shadow-md">
-                🧈
+              <div className="w-10 h-10 rounded-xl bg-[#D69A24] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition-transform">
+                🪔
               </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-serif font-bold text-lg tracking-wide text-white uppercase flex items-center gap-1.5">
-                  Sai Krishna <span className="text-[#FFE500] font-extrabold text-xs bg-[#FFE500]/20 px-1.5 py-0.5 rounded border border-[#FFE500]/30">Ghee</span>
+              <div className="flex flex-col leading-none">
+                <span className="font-serif font-bold text-xl tracking-wide text-[#1C1917]">
+                  Suddha Ghee
                 </span>
-                <span className="text-[9px] font-sans font-medium tracking-widest text-[#FFE500] uppercase">
-                  DIVINE GOODNESS
+                <span className="text-[9px] font-sans font-extrabold tracking-widest text-[#D69A24] uppercase mt-1">
+                  PURE &amp; TRADITIONAL
                 </span>
               </div>
             </LocalizedClientLink>
 
+            {/* Center Navigation Links */}
             <nav className="hidden md:block">
-              <ul className="flex items-center space-x-8 font-sans font-medium text-sm text-slate-200">
+              <ul className="flex items-center space-x-8 font-sans font-semibold text-sm text-[#52525B]">
                 <li>
                   <LocalizedClientLink
-                    className="text-[#FFE500] font-bold hover:text-[#FFE500]/80 transition-colors"
+                    className="hover:text-[#D69A24] transition-colors"
                     href="/"
                   >
                     Home
@@ -45,7 +44,7 @@ export async function NavigationHeader() {
                 </li>
                 <li>
                   <LocalizedClientLink
-                    className="hover:text-[#FFE500] transition-colors"
+                    className="text-[#D69A24] font-bold transition-colors"
                     href="/store"
                   >
                     Shop Ghee
@@ -53,55 +52,54 @@ export async function NavigationHeader() {
                 </li>
                 <li>
                   <LocalizedClientLink
-                    className="hover:text-[#FFE500] transition-colors"
-                    href="/store"
+                    className="hover:text-[#D69A24] transition-colors"
+                    href="/#story"
                   >
                     Our Story
                   </LocalizedClientLink>
                 </li>
                 <li>
                   <LocalizedClientLink
-                    className="hover:text-[#FFE500] transition-colors"
-                    href="/store"
+                    className="hover:text-[#D69A24] transition-colors"
+                    href="/#story"
                   >
-                    Contact
+                    Our Process
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-[#D69A24] transition-colors"
+                    href="/#quality"
+                  >
+                    Quality
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-[#D69A24] transition-colors"
+                    href="/#recipes"
+                  >
+                    Recipes
                   </LocalizedClientLink>
                 </li>
               </ul>
             </nav>
           </div>
 
-          {/* Right Utilities */}
-          <div className="flex justify-end items-center gap-3">
-            <Suspense fallback={null}>
-              <NavSearch />
-            </Suspense>
-
-            <div className="h-4 w-px bg-white/20" />
-
-            <RequestQuotePrompt>
-              <button className="flex gap-1.5 items-center rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 px-2.5 py-1.5 text-xs transition-colors">
-                <FilePlus />
-                <span className="hidden small:inline-block">Quote</span>
-              </button>
-            </RequestQuotePrompt>
-
+          {/* Right Action Icons */}
+          <div className="flex justify-end items-center gap-4">
             <LocalizedClientLink
-              className="hover:text-[#FFE500] transition-colors"
+              className="text-[#1C1917] hover:text-[#D69A24] transition-colors p-2 rounded-full hover:bg-black/5"
               href="/account"
+              aria-label="User Account"
             >
-              <button className="flex gap-1.5 items-center rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 px-2.5 py-1.5 text-xs transition-colors">
-                <User />
-                <span className="hidden small:inline-block">
-                  {customer ? customer.first_name : "Log in"}
-                </span>
-              </button>
+              <User size={20} />
             </LocalizedClientLink>
 
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
+                  className="flex gap-2"
                   href="/cart"
                 ></LocalizedClientLink>
               }
@@ -109,8 +107,8 @@ export async function NavigationHeader() {
               <CartButton />
             </Suspense>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
     </div>
   )
 }
