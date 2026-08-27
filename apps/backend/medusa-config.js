@@ -34,6 +34,9 @@ module.exports = defineConfig({
     },
   },
   modules: {
+    gheeCustomModuleService: {
+      resolve: "./modules/ghee-custom",
+    },
     [Modules.CACHE]: {
       resolve: "@medusajs/medusa/cache-inmemory",
     },
