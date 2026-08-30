@@ -2,6 +2,15 @@ const { loadEnv, defineConfig, Modules } = require("@medusajs/framework/utils");
 
 loadEnv(process.env.NODE_ENV, process.cwd());
 
+const isSslDisabled =
+  !process.env.DATABASE_URL ||
+  process.env.DATABASE_URL.includes("localhost") ||
+  process.env.DATABASE_URL.includes("127.0.0.1") ||
+  process.env.DATABASE_URL.includes("railway.internal") ||
+  process.env.DATABASE_URL.includes("sslmode=disable") ||
+  process.env.DATABASE_URL.includes("ssl=false") ||
+  process.env.DB_SSL === "false";
+
 module.exports = defineConfig({
   admin: {
     disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
@@ -9,7 +18,7 @@ module.exports = defineConfig({
   },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
-    databaseDriverOptions: process.env.DATABASE_URL?.includes("sslmode=disable") || process.env.DATABASE_URL?.includes("ssl=false")
+    databaseDriverOptions: isSslDisabled
       ? {}
       : {
           connection: {
