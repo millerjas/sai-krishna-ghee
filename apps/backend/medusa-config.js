@@ -32,9 +32,9 @@ module.exports = defineConfig({
           },
         },
     http: {
-      storeCors: process.env.STORE_CORS,
-      adminCors: process.env.ADMIN_CORS,
-      authCors: process.env.AUTH_CORS,
+      storeCors: process.env.STORE_CORS || "http://localhost:8000,http://localhost:7001",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001,https://sai-krishna-ghee-production.up.railway.app",
+      authCors: process.env.AUTH_CORS || "http://localhost:8000,http://localhost:7000,http://localhost:7001,https://sai-krishna-ghee-production.up.railway.app",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
