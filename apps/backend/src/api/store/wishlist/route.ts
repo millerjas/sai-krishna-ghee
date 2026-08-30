@@ -1,7 +1,7 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
 
-export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+export const GET = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) => {
   try {
     const customerId = req.auth_context?.actor_id
     if (!customerId) {
@@ -18,7 +18,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 }
 
-export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+export const POST = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) => {
   try {
     const customerId = req.auth_context?.actor_id
     if (!customerId) {
@@ -60,7 +60,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
+export const DELETE = async (req: AuthenticatedMedusaRequest, res: MedusaResponse) => {
   try {
     const customerId = req.auth_context?.actor_id
     if (!customerId) {
