@@ -5,6 +5,7 @@ import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-relat
 import { notFound } from "next/navigation"
 import React, { Suspense } from "react"
 import SuddhaProductDetail from "../components/suddha-product-detail"
+import { getCustomer } from "@lib/data/customer"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -12,7 +13,7 @@ type ProductTemplateProps = {
   countryCode: string
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   product,
   region,
   countryCode,
@@ -21,10 +22,17 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return notFound()
   }
 
+  // Fetch customer server-side so wishlist button knows login state
+  const customer = await getCustomer().catch(() => null)
+
   return (
     <div className="bg-[#FAF7F0] min-h-screen pb-12 flex flex-col gap-y-8">
-      {/* Product Detail Main View matching user's screenshots */}
-      <SuddhaProductDetail product={product} countryCode={countryCode} />
+      {/* Product Detail Main View */}
+      <SuddhaProductDetail
+        product={product}
+        countryCode={countryCode}
+        customerId={customer?.id ?? null}
+      />
 
       {/* Tabs & Additional Specs Section */}
       <div className="content-container" id="product-tabs">

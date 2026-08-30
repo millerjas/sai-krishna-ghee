@@ -55,7 +55,7 @@ const BillingAddressForm = ({ cart }: { cart: B2BCart | null }) => {
         <Input
           label="Company name"
           name="billing_address.company"
-          defaultValue={cart?.company?.name}
+          defaultValue={cart?.billing_address?.company || ""}
           value={formData["billing_address.company"]}
           onChange={handleChange}
           autoComplete="organization"

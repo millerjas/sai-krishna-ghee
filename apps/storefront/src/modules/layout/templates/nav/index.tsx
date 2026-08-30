@@ -1,6 +1,6 @@
 import { getCustomer } from "@lib/data/customer"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import User from "@modules/common/icons/user"
+import HeaderAuth from "@modules/layout/components/header-auth"
 import CartButton from "@modules/layout/components/cart-button"
 import { Suspense } from "react"
 
@@ -86,15 +86,11 @@ export async function NavigationHeader() {
             </nav>
           </div>
 
-          {/* Right Action Icons */}
+          {/* Right Action Controls */}
           <div className="flex justify-end items-center gap-4">
-            <LocalizedClientLink
-              className="text-[#1C1917] hover:text-[#D69A24] transition-colors p-2 rounded-full hover:bg-black/5"
-              href="/account"
-              aria-label="User Account"
-            >
-              <User size={20} />
-            </LocalizedClientLink>
+            <Suspense fallback={<div className="w-20 h-8 rounded-lg bg-neutral-200 animate-pulse" />}>
+              <HeaderAuth />
+            </Suspense>
 
             <Suspense
               fallback={

@@ -4,7 +4,7 @@ import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { omit } from "lodash"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { B2BCart } from "types/global"
 import {
@@ -31,7 +31,7 @@ export async function retrieveCart() {
       cartId,
       {
         fields:
-          "*items, *region, *items.product, *items.variant, +items.thumbnail, +items.metadata, *promotions, *company",
+          "*items, *region, *items.product, *items.variant, +items.thumbnail, +items.metadata",
       },
       { ...getAuthHeaders(), ...getCacheHeaders("carts") }
     )
@@ -40,7 +40,10 @@ export async function retrieveCart() {
         promotions?: HttpTypes.StorePromotion[]
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      if (process.env.NODE_ENV === "development") {
+        console.error("retrieveCart error:", err?.message || err)
+      }
       return null
     })
 }
@@ -58,9 +61,6 @@ export async function getOrSetCart(countryCode: string) {
     const body = {
       email: customer?.email,
       region_id: region.id,
-      metadata: {
-        company_id: customer?.employee?.company?.id,
-      },
     }
 
     const cartResp = await sdk.store.cart
@@ -137,6 +137,7 @@ export async function addToCart({
     )
     .then(() => {
       revalidateTag(getCacheTag("carts"))
+      revalidatePath("/", "layout")
     })
     .catch(medusaError)
 }
@@ -153,30 +154,14 @@ export async function addToCartBulk({
     throw new Error("Error retrieving or creating cart")
   }
 
-  const headers = {
-    "Content-Type": "application/json",
-    ...getAuthHeaders(),
-  } as Record<string, any>
-
-  if (process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY) {
-    headers["x-publishable-api-key"] =
-      process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+  for (const item of lineItems) {
+    await sdk.store.cart
+      .createLineItem(cart.id, item, {}, getAuthHeaders())
+      .catch(medusaError)
   }
 
-  await fetch(
-    `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/line-items/bulk`,
-    {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ line_items: lineItems }),
-    }
-  )
-    .then(() => {
-      revalidateTag(getCacheTag("carts"))
-    })
-    .catch(medusaError)
-
   revalidateTag(getCacheTag("carts"))
+  revalidatePath("/", "layout")
 }
 
 export async function updateLineItem({

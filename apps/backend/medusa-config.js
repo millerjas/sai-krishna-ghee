@@ -37,6 +37,27 @@ module.exports = defineConfig({
     gheeCustomModuleService: {
       resolve: "./modules/ghee-custom",
     },
+    [Modules.AUTH]: {
+      resolve: "@medusajs/medusa/auth",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+            options: {},
+          },
+          {
+            resolve: "@medusajs/medusa/auth-google",
+            id: "google",
+            options: {
+              clientId: process.env.MEDUSA_AUTH_GOOGLE_CLIENT_ID || "GOOGLE_CLIENT_ID_PLACEHOLDER",
+              clientSecret: process.env.MEDUSA_AUTH_GOOGLE_CLIENT_SECRET || "GOOGLE_CLIENT_SECRET_PLACEHOLDER",
+              callbackUrl: process.env.MEDUSA_AUTH_GOOGLE_CALLBACK_URL || "http://localhost:9000/auth/customer/google/callback",
+            },
+          },
+        ],
+      },
+    },
     [Modules.CACHE]: {
       resolve: "@medusajs/medusa/cache-inmemory",
     },

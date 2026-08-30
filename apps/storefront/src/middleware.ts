@@ -12,16 +12,17 @@ const regionMapCache = {
 
 async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
+  const apiKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || PUBLISHABLE_API_KEY
+  const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || BACKEND_URL || "http://localhost:9000"
 
   if (
     !regionMap.keys().next().value ||
     regionMapUpdated < Date.now() - 3600 * 1000
   ) {
     try {
-      // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-      const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
+      const { regions } = await fetch(`${backendUrl}/store/regions`, {
         headers: {
-          "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+          "x-publishable-api-key": apiKey!,
         },
         next: {
           revalidate: 3600,
@@ -38,7 +39,6 @@ async function getRegionMap(cacheId: string) {
       })
 
       if (regions?.length) {
-        // Create a map of country codes to regions.
         regions.forEach((region: HttpTypes.StoreRegion) => {
           region.countries?.forEach((c) => {
             regionMapCache.regionMap.set(c.iso_2 ?? "", region)
@@ -50,16 +50,23 @@ async function getRegionMap(cacheId: string) {
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(
-          "Middleware.ts: Unable to reach Medusa backend at " + BACKEND_URL + ". Falling back to default region."
+          "Middleware.ts: Unable to reach Medusa backend at " + backendUrl + ". Falling back to default region."
         )
       }
       if (!regionMapCache.regionMap.size) {
-        regionMapCache.regionMap.set(DEFAULT_REGION, {
+        const fallbackRegion = {
           id: "reg_default",
-          name: "Default Region",
+          name: "India",
           currency_code: "inr",
-          countries: [{ iso_2: DEFAULT_REGION, name: "Default" }]
-        } as any)
+          countries: [
+            { iso_2: "us", name: "United States" },
+            { iso_2: "in", name: "India" },
+            { iso_2: "gb", name: "United Kingdom" },
+          ]
+        } as any
+        regionMapCache.regionMap.set("us", fallbackRegion)
+        regionMapCache.regionMap.set("in", fallbackRegion)
+        regionMapCache.regionMap.set("gb", fallbackRegion)
       }
     }
   }
@@ -158,8 +165,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
+  const pathSegments = request.nextUrl.pathname.split("/").filter(Boolean)
+  const firstSegmentIsCountry = pathSegments[0] && pathSegments[0].length === 2
+  const restPath = firstSegmentIsCountry ? pathSegments.slice(1).join("/") : pathSegments.join("/")
+  const redirectPath = restPath ? `/${restPath}` : ""
 
   const queryString = request.nextUrl.search ? request.nextUrl.search : ""
 

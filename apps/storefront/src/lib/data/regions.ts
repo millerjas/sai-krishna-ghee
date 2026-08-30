@@ -10,14 +10,14 @@ export const listRegions = cache(async function () {
   return sdk.store.region
     .list({}, { ...getCacheHeaders("regions") })
     .then(({ regions }) => regions)
-    .catch(medusaError)
+    .catch(() => [])
 })
 
 export const retrieveRegion = cache(async function (id: string) {
   return sdk.store.region
     .retrieve(id, {}, { ...getCacheHeaders("regions") })
     .then(({ region }) => region)
-    .catch(medusaError)
+    .catch(() => null)
 })
 
 const regionMap = new Map<string, HttpTypes.StoreRegion>()
@@ -38,7 +38,11 @@ export const getRegion = cache(async function (countryCode: string) {
       })
     }
 
-    let region = countryCode ? regionMap.get(countryCode) : regionMap.get("us")
+    let region = countryCode ? regionMap.get(countryCode) : undefined
+
+    if (!region && regions && regions.length) {
+      region = regions[0]
+    }
 
     if (!region) {
       region = {

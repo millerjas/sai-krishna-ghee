@@ -1,19 +1,27 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { addToCartBulk } from "@lib/data/cart"
+import {
+  addToWishlist,
+  removeFromWishlist,
+  isInWishlist,
+} from "@lib/data/wishlist"
+import ProductReviewsSection from "@modules/products/components/reviews"
 import { useRouter } from "next/navigation"
 
 type SuddhaProductDetailProps = {
   product: HttpTypes.StoreProduct
   countryCode: string
+  customerId?: string | null  // null = guest, string = logged in
 }
 
 export default function SuddhaProductDetail({
   product,
   countryCode,
+  customerId,
 }: SuddhaProductDetailProps) {
   const router = useRouter()
   const variants = useMemo(() => product.variants || [], [product.variants])
@@ -25,14 +33,16 @@ export default function SuddhaProductDetail({
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
+  useEffect(() => {
+    if (product?.id && customerId) {
+      isInWishlist(product.id).then(setIsWishlisted)
+    } else {
+      setIsWishlisted(false)
+    }
+  }, [product?.id, customerId])
+
   // Currently selected variant
   const selectedVariant = variants[selectedVariantIndex] || variants[0] || null
-
-  // Determine category name dynamically
-  const categoryName =
-    product.categories?.[0]?.name ||
-    product.collection?.title ||
-    (product.title?.toLowerCase().includes("buffalo") ? "BUFFALO GHEE" : "A2 COW GHEE")
 
   // Dynamic description
   const descriptionText =
@@ -87,37 +97,45 @@ export default function SuddhaProductDetail({
         label: v.title && v.title !== "Default Variant" ? v.title : `${250 * (idx + 1)}g`,
       }))
     }
-    return ["250g", "500g", "1kg", "2kg", "5kg"].map((label, idx) => ({
-      index: idx,
-      id: product.id,
-      label,
-    }))
-  }, [variants, product.id])
+    return []
+  }, [variants])
 
-  // Active Variant ID for Cart Actions
-  const activeVariantId = selectedVariant?.id || product.variants?.[0]?.id || product.id
+  // Active Variant ID for Cart Actions (must be a valid variant_... ID)
+  const activeVariantId = selectedVariant?.id || product.variants?.[0]?.id || null
 
   // Admin metadata ratings fallback
   const ratingVal = (product.metadata as any)?.rating || "4.6"
   const reviewCountVal = (product.metadata as any)?.review_count || "521"
 
+  const categoryName =
+    product.categories?.[0]?.name ||
+    product.collection?.title ||
+    (product.title?.toLowerCase().includes("buffalo") ? "BUFFALO GHEE" : "A2 COW GHEE")
+
   const handleAddToCart = async () => {
-    if (!activeVariantId) return
+    if (!activeVariantId) {
+      alert("Please select a valid variant before adding to cart.")
+      return
+    }
     setIsAdding(true)
     try {
       await addToCartBulk({
         lineItems: [{ variant_id: activeVariantId, quantity }],
         countryCode,
       })
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error adding to cart", e)
+      alert(e?.message || "Failed to add product to cart.")
     } finally {
       setIsAdding(false)
     }
   }
 
   const handleBuyNow = async () => {
-    if (!activeVariantId) return
+    if (!activeVariantId) {
+      alert("Please select a valid variant.")
+      return
+    }
     setIsAdding(true)
     try {
       await addToCartBulk({
@@ -125,8 +143,9 @@ export default function SuddhaProductDetail({
         countryCode,
       })
       router.push(`/${countryCode}/checkout`)
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error with buy now", e)
+      alert(e?.message || "Failed to proceed to checkout.")
     } finally {
       setIsAdding(false)
     }
@@ -134,7 +153,7 @@ export default function SuddhaProductDetail({
 
   return (
     <div className="bg-[#FAF7F0] min-h-screen py-6 px-4 small:px-8">
-      {/* Breadcrumb dynamically powered by Medusa data */}
+      {/* Breadcrumb */}
       <div className="max-w-6xl mx-auto mb-6 text-xs text-[#52525B] font-medium flex items-center gap-1.5 flex-wrap">
         <LocalizedClientLink href="/" className="hover:text-[#D69A24] transition-colors">
           Home
@@ -147,7 +166,7 @@ export default function SuddhaProductDetail({
         <span className="text-[#1C1917] font-semibold">{product.title}</span>
       </div>
 
-      {/* Main 2-Column Product Layout with constrained max-width */}
+      {/* Main 2-Column Product Layout */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Left Column: Image Gallery */}
         <div className="lg:col-span-5 flex flex-col gap-4 max-w-md mx-auto lg:max-w-none w-full">
@@ -179,7 +198,7 @@ export default function SuddhaProductDetail({
           )}
         </div>
 
-        {/* Right Column: Dynamic Product Information & Controls */}
+        {/* Right Column: Information & Controls */}
         <div className="lg:col-span-7 flex flex-col gap-5">
           {/* Eyebrow Category */}
           <div className="text-xs font-bold text-[#D69A24] uppercase tracking-wider flex items-center gap-1">
@@ -234,27 +253,29 @@ export default function SuddhaProductDetail({
           <div className="h-px bg-[#E5E0D8] w-full my-1" />
 
           {/* Dynamic Size / Variant Selector */}
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-bold text-[#1C1917]">Select Size:</span>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {sizeOptions.map((opt) => {
-                const isActive = selectedVariantIndex === opt.index
-                return (
-                  <button
-                    key={opt.id + opt.index}
-                    onClick={() => setSelectedVariantIndex(opt.index)}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-                      isActive
-                        ? "bg-[#173B2F] text-white shadow-sm font-bold"
-                        : "bg-white text-[#1C1917] border border-[#E5E0D8] hover:border-[#173B2F]"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                )
-              })}
+          {sizeOptions.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-bold text-[#1C1917]">Select Size:</span>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {sizeOptions.map((opt) => {
+                  const isActive = selectedVariantIndex === opt.index
+                  return (
+                    <button
+                      key={opt.id + opt.index}
+                      onClick={() => setSelectedVariantIndex(opt.index)}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-[#173B2F] text-white shadow-sm font-bold"
+                          : "bg-white text-[#1C1917] border border-[#E5E0D8] hover:border-[#173B2F]"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quantity Selector */}
           <div className="flex items-center gap-3 mt-2">
@@ -278,12 +299,12 @@ export default function SuddhaProductDetail({
             </div>
           </div>
 
-          {/* Action Buttons Row */}
+          {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-2">
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="bg-[#D69A24] hover:bg-[#B87B10] text-white font-bold py-3.5 px-6 rounded-xl flex-1 flex items-center justify-center gap-2 text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="bg-[#D69A24] hover:bg-[#B87B10] text-white font-bold py-3.5 px-6 rounded-xl flex-1 flex items-center justify-center gap-2 text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-60"
             >
               <span>{isAdding ? "ADDING..." : "ADD TO CART"}</span>
               <span>🛒</span>
@@ -292,15 +313,47 @@ export default function SuddhaProductDetail({
             <button
               onClick={handleBuyNow}
               disabled={isAdding}
-              className="bg-[#173B2F] hover:bg-[#0E2920] text-white font-bold py-3.5 px-6 rounded-xl flex-1 flex items-center justify-center gap-2 text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
+              className="bg-[#173B2F] hover:bg-[#0E2920] text-white font-bold py-3.5 px-6 rounded-xl flex-1 flex items-center justify-center gap-2 text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-60"
             >
               <span>BUY NOW →</span>
             </button>
 
             <button
-              onClick={() => setIsWishlisted(!isWishlisted)}
-              className="w-12 h-12 rounded-full bg-white border border-[#E5E0D8] hover:border-[#D69A24] flex items-center justify-center text-lg transition-colors cursor-pointer shadow-sm"
+              onClick={async () => {
+                if (!customerId) {
+                  router.push(`/${countryCode}/account?view=log-in`)
+                  return
+                }
+                if (isWishlisted) {
+                  setIsWishlisted(false)
+                  await removeFromWishlist(product.id)
+                } else {
+                  setIsWishlisted(true)
+                  const res = await addToWishlist({
+                    id: `wish_${Date.now()}`,
+                    product_id: product.id,
+                    title: product.title || "Ghee Product",
+                    handle: product.handle || "",
+                    thumbnail: currentImage,
+                  })
+                  if (!res.success) {
+                    setIsWishlisted(false)
+                  }
+                }
+              }}
+              className={`w-12 h-12 rounded-full border flex items-center justify-center text-lg transition-all cursor-pointer shadow-sm ${
+                isWishlisted
+                  ? "bg-red-50 border-red-200 text-red-600 scale-105"
+                  : "bg-white border-[#E5E0D8] hover:border-[#D69A24] text-neutral-400"
+              }`}
               aria-label="Wishlist"
+              title={
+                !customerId
+                  ? "Login to save to Wishlist"
+                  : isWishlisted
+                  ? "Remove from Wishlist"
+                  : "Save to Wishlist"
+              }
             >
               {isWishlisted ? "❤️" : "🤍"}
             </button>
@@ -332,20 +385,9 @@ export default function SuddhaProductDetail({
         </div>
       </div>
 
-      {/* Floating WhatsApp Support Widget */}
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
-        <div className="bg-white/95 backdrop-blur-md text-[#1C1917] text-xs font-semibold px-4 py-2 rounded-full border border-[#E5E0D8] shadow-lg">
-          Need Help? Chat on WhatsApp 💬
-        </div>
-        <a
-          href="https://wa.me/919876543210?text=Hi%20Suddha%20Ghee%2C%20I%20have%20a%20query."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-12 h-12 rounded-full bg-[#25D366] hover:bg-[#1ebd59] text-white flex items-center justify-center text-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer"
-          aria-label="WhatsApp Support"
-        >
-          💬
-        </a>
+      {/* Customer Reviews Section */}
+      <div className="max-w-6xl mx-auto mt-12">
+        <ProductReviewsSection productId={product.id} />
       </div>
     </div>
   )

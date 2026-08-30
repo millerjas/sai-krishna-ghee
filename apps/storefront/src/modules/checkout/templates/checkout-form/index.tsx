@@ -2,7 +2,6 @@ import { listCartShippingMethods } from "@lib/data/fulfillment"
 import { listCartPaymentMethods } from "@lib/data/payment"
 import SignInPrompt from "@modules/cart/components/sign-in-prompt"
 import BillingAddress from "@modules/checkout/components/billing-address"
-import Company from "@modules/checkout/components/company"
 import ContactDetails from "@modules/checkout/components/contact-details"
 import Payment from "@modules/checkout/components/payment"
 import Shipping from "@modules/checkout/components/shipping"
@@ -44,8 +43,6 @@ export default async function CheckoutForm({
         </LocalizedClientLink>
 
         {!customer ? <SignInPrompt /> : null}
-
-        {cart?.company && <Company cart={cart} />}
 
         <ShippingAddress cart={cart} customer={customer} />
 

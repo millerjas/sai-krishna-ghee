@@ -3,31 +3,53 @@
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { cache } from "react"
 import { B2BCustomer } from "types/global"
-import { createCompany, createEmployee } from "./companies"
 import {
   getAuthHeaders,
   getCacheHeaders,
   getCacheTag,
+  getCartId,
   removeAuthToken,
+  removeCartId,
   setAuthToken,
 } from "./cookies"
-import { Customer } from "@medusajs/js-sdk/dist/admin/customer"
+
+const DEFAULT_COUNTRY = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
+
+/** Safely extract a JWT string from any shape the Medusa SDK returns */
+function extractToken(res: unknown): string | null {
+  if (!res) return null
+  if (typeof res === "string" && res.length > 10) return res
+  if (typeof res === "object") {
+    const obj = res as Record<string, any>
+    const token = obj.token ?? obj.auth_token ?? obj.jwt ?? obj.access_token
+    if (typeof token === "string" && token.length > 10) return token
+  }
+  return null
+}
 
 export const getCustomer = cache(
   async function (): Promise<B2BCustomer | null> {
+    const authHeaders = getAuthHeaders()
+    if (!("authorization" in authHeaders)) {
+      return null
+    }
+
     return await sdk.store.customer
       .retrieve(
-        {
-          fields: "*employee, *orders",
-        },
-        { ...getCacheHeaders("customers"), ...getAuthHeaders() }
+        { fields: "*addresses,metadata" },
+        { ...getCacheHeaders("customers"), ...authHeaders }
       )
       .then(({ customer }) => customer as B2BCustomer)
-      .catch(() => null)
+      .catch((err) => {
+        if (process.env.NODE_ENV === "development") {
+          console.error("getCustomer error:", err?.message || err)
+        }
+        return null
+      })
   }
 )
 
@@ -37,100 +59,61 @@ export const updateCustomer = cache(async function (
   const updateRes = await sdk.store.customer
     .update(body, {}, getAuthHeaders())
     .then(({ customer }) => customer)
-    .catch(medusaError)
+    .catch(() => null)
 
-  revalidateTag(getCacheTag("customers"))
+  revalidatePath("/", "layout")
   return updateRes
 })
 
 export async function signup(_currentState: unknown, formData: FormData) {
-
- 
   const password = formData.get("password") as string
   const customerForm = {
     email: formData.get("email") as string,
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
-    phone: formData.get("phone") as string,
-    company_name: formData.get("company_name") as string,
+    phone: (formData.get("phone") as string) || "",
   }
 
   try {
-    const token = await sdk.auth.register("customer", "emailpass", {
+    // Step 1: Register the auth identity
+    const registerRes: any = await sdk.auth.register("customer", "emailpass", {
       email: customerForm.email,
       password: password,
     })
 
-    const customHeaders = { authorization: `Bearer ${token}` }
-  
-    const { customer: createdCustomer } = await sdk.store.customer.create(
-      customerForm,
-      {},
-      customHeaders
-    )
+    let token = extractToken(registerRes)
 
-    await sdk.client.setToken(token);
+    // Step 2: Create the customer profile using the registration token
+    const customHeaders: Record<string, string> = token
+      ? { authorization: `Bearer ${token}` }
+      : {}
 
-    await addToApproval(formData.get("email") as string, createdCustomer?.id);
+    await sdk.store.customer.create(customerForm, {}, customHeaders)
 
-    const companyForm = {
-      name: formData.get("company_name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("company_phone") as string,
-      address: formData.get("company_address") as string,
-      city: formData.get("company_city") as string,
-      state: formData.get("company_state") as string,
-      zip: formData.get("company_zip") as string,
-      country: formData.get("company_country") as string,
-      currency_code: formData.get("currency_code") as string,
+    // Step 3: If no token from register (some Medusa versions), log in explicitly
+    if (!token) {
+      const loginRes: any = await sdk.auth.login("customer", "emailpass", {
+        email: customerForm.email,
+        password: password,
+      })
+      token = extractToken(loginRes)
     }
 
-    const createdCompany = await createCompany(companyForm);
+    if (!token) {
+      return { success: false, error: "Account created but could not log in automatically. Please sign in." }
+    }
 
-    const createdEmployee = await createEmployee({
-      company_id: createdCompany?.id as string,
-      customer_id: createdCustomer.id,
-      is_admin: true,
-      spending_limit: 0,
-    }).catch((err) => {
-      console.log("error creating employee", err)
-    })
+    // Step 4: Persist the session cookie
+    setAuthToken(token)
 
-    revalidateTag(getCacheTag("customers"));
+    // Step 5: Bust the layout cache so NavigationHeader re-renders with customer
+    revalidatePath("/", "layout")
 
-    return `Account created, please login.`;
-
+    redirect(`/${DEFAULT_COUNTRY}/store`)
   } catch (error: any) {
-    let errorMsg = error.toString();
-
-    if(!errorMsg.includes("Unauthorized")){
-      return errorMsg;
-    }
-    else{
-      return "Account created. Wait for approval."
-    }
-  }
-}
-
-async function addToApproval(email: string, customer_id: string){
-
-  try{
-    const response = await fetch(`http://localhost:9000/store/customer/${email}/add-to-approval`,{
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-publishable-api-key': process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '',
-      },
-      body: JSON.stringify({ "email": email, "customer_id": customer_id }),
-    });
-
-    const data = await response.json();
-    console.log("User added to approval ", data);
-    return;
-
-  }catch(err){
-    console.error("Error adding to approval:", err);
+    // Next.js redirect throws — must be re-thrown
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) throw error
+    return { success: false, error: error.message || String(error) }
   }
 }
 
@@ -138,64 +121,45 @@ export async function login(_currentState: unknown, formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
-  const approved = await checkApproved(email);
-
-  // if(approved == false){
-  //   return "Your account is not approved yet. Please check your email for approval."
-  // }
-
   try {
-    await sdk.auth
-      .login("customer", "emailpass", { email, password })
-      .then((token) => {
-        if(approved == true){
-          setAuthToken(token as string)
-          revalidateTag(getCacheTag("customers"))
-        }else{
-          return "Wait for approval."
-        }
-      })
+    const res: any = await sdk.auth.login("customer", "emailpass", {
+      email,
+      password,
+    })
 
-      return 'Wait for approval.'
+    const token = extractToken(res)
 
+    if (!token) {
+      // Medusa returns a non-token response on bad credentials
+      return { success: false, error: "Invalid email or password." }
+    }
+
+    // Persist the session cookie
+    setAuthToken(token)
+
+    // Bust layout cache so header updates
+    revalidatePath("/", "layout")
+
+    redirect(`/${DEFAULT_COUNTRY}/store`)
   } catch (error: any) {
-    let errorMsg = error.toString();
-
-    if(errorMsg.includes("mail")){
-      return errorMsg;
-    }
-    else{
-      return "Wait for approval."
-    }
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) throw error
+    return { success: false, error: error.message || "Invalid email or password." }
   }
 }
 
-
-async function checkApproved(email: string) {
-
-  try{
-
-  const response = await fetch(`http://localhost:9000/store/customer?email=${email}`,{
-    headers: {
-      "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || '',
-    }
-  });
-  const data = await response.json();
-
-  return data.customer_approved.customer_approved.approved;
-
-  }catch(err){
-    console.error("Something goes wrong:", err);
-    return false;
-  }
-
+export async function initiateGoogleAuth() {
+  const backendUrl =
+    process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+  redirect(`${backendUrl}/auth/customer/google`)
 }
 
-export async function signout(countryCode: string, customerId: string) {
-  await sdk.auth.logout()
+export async function signout(countryCode: string, customerId?: string) {
+  try {
+    await sdk.auth.logout()
+  } catch (_) {}
   removeAuthToken()
-  revalidateTag(getCacheTag("auth"))
-  revalidateTag(getCacheTag("customers"))
+  removeCartId()  // clear cart so next user starts fresh
+  revalidatePath("/", "layout")
   redirect(`/${countryCode}/account`)
 }
 
@@ -219,7 +183,7 @@ export const addCustomerAddress = async (
   return sdk.store.customer
     .createAddress(address, {}, getAuthHeaders())
     .then(({ customer }) => {
-      revalidateTag(getCacheTag("customers"))
+      revalidatePath("/", "layout")
       return { success: true, error: null }
     })
     .catch((err) => {
@@ -234,7 +198,7 @@ export const deleteCustomerAddress = async (
   await sdk.store.customer
     .deleteAddress(addressId, getAuthHeaders())
     .then(() => {
-      revalidateTag(getCacheTag("customers"))
+      revalidatePath("/", "layout")
       return { success: true, error: null }
     })
     .catch((err) => {
@@ -265,7 +229,7 @@ export const updateCustomerAddress = async (
   return sdk.store.customer
     .updateAddress(addressId, address, {}, getAuthHeaders())
     .then(() => {
-      revalidateTag(getCacheTag("customers"))
+      revalidatePath("/", "layout")
       return { success: true, error: null }
     })
     .catch((err) => {

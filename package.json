@@ -4,8 +4,9 @@
   "scripts": {
     "setup": "yarn build-packages && yarn generate-env && yarn setup-db && yarn seed && yarn setup-user",
     "dev": "turbo run dev",
+    "build": "turbo run build",
     "build-packages": "turbo run build --filter ./packages/*",
-    "setup-db": "cd ./apps/backend && npx medusa db:migrate",
+    "setup-db": "cd ./apps/backend && npx medusa db:migrate --execute-all-links",
     "seed": "turbo run seed --filter=medusa-starter-default",
     "setup-user": "cd ./apps/backend && npx medusa user -e admin@test.com -p supersecret -i admin",
     "generate-env": "node -e \"const fs=require('fs'); if (!fs.existsSync('./apps/backend/.env')) fs.copyFileSync('./apps/backend/.env.template', './apps/backend/.env'); if (!fs.existsSync('./apps/storefront/.env')) fs.copyFileSync('./apps/storefront/.env.template', './apps/storefront/.env');\"",

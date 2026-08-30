@@ -62,17 +62,15 @@ const AccountNav = ({ customer }: { customer: B2BCustomer | null }) => {
                 </li>
                 <li>
                   <LocalizedClientLink
-                    href="/account/company"
+                    href="/account/wishlist"
                     className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
-                    data-testid="company-link"
+                    data-testid="wishlist-link"
                   >
-                    <>
-                      <div className="flex items-center gap-x-2">
-                        <BuildingStorefront width={20} />
-                        <span>Company</span>
-                      </div>
-                      <ChevronDown className="transform -rotate-90" />
-                    </>
+                    <div className="flex items-center gap-x-2">
+                      <svg className="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                      <span>Wishlist</span>
+                    </div>
+                    <ChevronDown className="transform -rotate-90" />
                   </LocalizedClientLink>
                 </li>
                 <li>
@@ -99,19 +97,6 @@ const AccountNav = ({ customer }: { customer: B2BCustomer | null }) => {
                     <div className="flex items-center gap-x-2">
                       <Package size={20} />
                       <span>Orders</span>
-                    </div>
-                    <ChevronDown className="transform -rotate-90" />
-                  </LocalizedClientLink>
-                </li>
-                <li>
-                  <LocalizedClientLink
-                    href="/account/quotes"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
-                    data-testid="quotes-link"
-                  >
-                    <div className="flex items-center gap-x-2">
-                      <FilePlus size={16} />
-                      <span>Quotes</span>
                     </div>
                     <ChevronDown className="transform -rotate-90" />
                   </LocalizedClientLink>
@@ -158,11 +143,11 @@ const AccountNav = ({ customer }: { customer: B2BCustomer | null }) => {
             </li>
             <li>
               <AccountNavLink
-                href="/account/company"
+                href="/account/wishlist"
                 route={route!}
-                data-testid="company-link"
+                data-testid="wishlist-link"
               >
-                Company
+                Wishlist
               </AccountNavLink>
             </li>
             <li>
@@ -183,22 +168,15 @@ const AccountNav = ({ customer }: { customer: B2BCustomer | null }) => {
                 Orders
               </AccountNavLink>
             </li>
-            <li>
-              <AccountNavLink
-                href="/account/quotes"
-                route={route!}
-                data-testid="quotes-link"
-              >
-                Quotes
-              </AccountNavLink>
-            </li>
-            <li className="text-neutral-400 hover:text-neutral-950">
+            <li className="mt-4 pt-4 border-t border-gray-200 w-full">
               <button
                 type="button"
                 onClick={handleLogout}
+                className="flex items-center gap-2 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 py-2 px-4 rounded-xl transition-all cursor-pointer shadow-sm w-full justify-center"
                 data-testid="logout-button"
               >
-                Log out
+                <span>🚪</span>
+                <span>Sign Out</span>
               </button>
             </li>
           </ul>

@@ -50,7 +50,8 @@ export const setAuthToken = (token: string) => {
   cookies().set("_medusa_jwt", token, {
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
+    path: "/",
     secure: process.env.NODE_ENV === "production",
   })
 }
@@ -58,6 +59,7 @@ export const setAuthToken = (token: string) => {
 export const removeAuthToken = () => {
   cookies().set("_medusa_jwt", "", {
     maxAge: -1,
+    path: "/",
   })
 }
 
@@ -69,11 +71,12 @@ export const setCartId = (cartId: string) => {
   cookies().set("_medusa_cart_id", cartId, {
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
+    path: "/",
     secure: process.env.NODE_ENV === "production",
   })
 }
 
 export const removeCartId = () => {
-  cookies().set("_medusa_cart_id", "", { maxAge: -1 })
+  cookies().set("_medusa_cart_id", "", { maxAge: -1, path: "/" })
 }

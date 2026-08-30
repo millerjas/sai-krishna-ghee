@@ -6,7 +6,6 @@ import { HttpTypes } from "@medusajs/types"
 import { Heading } from "@medusajs/ui"
 import ProfileCard from "@modules/account/components/profile-card"
 import SecurityCard from "@modules/account/components/security-card"
-import { QueryEmployee } from "@starter/types"
 import { notFound } from "next/navigation"
 import { B2BCustomer } from "types/global"
 

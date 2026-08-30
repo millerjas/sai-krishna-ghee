@@ -13,7 +13,7 @@ export const retrieveOrder = cache(async function (id: string) {
       { ...getCacheHeaders("orders"), ...getAuthHeaders() }
     )
     .then(({ order }) => order)
-    .catch((err) => medusaError(err))
+    .catch(() => null)
 })
 
 export const listOrders = cache(async function (
@@ -33,5 +33,5 @@ export const listOrders = cache(async function (
       { ...getCacheHeaders("orders"), ...getAuthHeaders() }
     )
     .then(({ orders }) => orders)
-    .catch((err) => medusaError(err))
+    .catch(() => [])
 })

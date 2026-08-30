@@ -71,15 +71,20 @@ export const getProductsList = cache(async function ({
       nextPage: null,
     }
   }
+  const listParams: any = {
+    limit,
+    offset,
+    fields: "*variants.calculated_price",
+    ...queryParams,
+  }
+
+  if (region?.id) {
+    listParams.region_id = region.id
+  }
+
   return sdk.store.product
     .list(
-      {
-        limit,
-        offset,
-        region_id: region.id,
-        fields: "*variants.calculated_price",
-        ...queryParams,
-      },
+      listParams,
       { ...getCacheHeaders("products") }
     )
     .then(({ products, count }) => {
