@@ -25,5 +25,6 @@ build
 !.yarn/versions
 
 .medusa
+/public
 
 *.pdf
