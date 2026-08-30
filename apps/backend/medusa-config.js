@@ -3,6 +3,10 @@ const { loadEnv, defineConfig, Modules } = require("@medusajs/framework/utils");
 loadEnv(process.env.NODE_ENV, process.cwd());
 
 module.exports = defineConfig({
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+    backendUrl: process.env.MEDUSA_BACKEND_URL || "http://localhost:9000",
+  },
   projectConfig: {
     fileService: {
       provider: "local",
@@ -12,8 +16,8 @@ module.exports = defineConfig({
             resolve: "@medusajs/medusa/file-local-next",
             id: "local",
             options: {
-              upload_dir: "static", // Katalog, w którym będą przechowywane pliki
-              backend_url: "http://localhost:9000/static" // Adres, pod którym pliki będą dostępne
+              upload_dir: "static",
+              backend_url: `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}/static`
             },
           },
         ],
